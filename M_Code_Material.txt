@@ -1,0 +1,14 @@
+= Odbc.Query(connStr, 
+Text.Combine({"
+select col.CDCVNB, col.CDAITX, ir.UCDEF, ir.UCDEF*col.CDACQT as EXUCDF, irb.SMAT, irb.SMAL, irb.SOOT, irb.SOOL, (irb.SMAT+irb.SMAL+irb.SOOT+irb.SOOL)*col.CDACQT as TOTMAT, cc.CATCD, trim(cc.CATDS) as CATDS, COSrc
+  from(select CDAENB, CDDCCD, CDCVNB, CDAITX, CDACQT, CDDPVA, CDDUVA, 'ACTIVE' as COSrc
+  from AMFLIBW.MBCDREP
+  union
+  select DRAENB, DRDCCD, DRCVNB, DRAITX, DRACQT, DRDPVA, DRDUVA, 'HIST' as COSrc
+  from AMFLIBW.MBDRREP) col
+join amflibW.ITMRVA ir on ir.ITNBR=col.CDAITX and ir.STID='AKR' and ir.ITRV=''
+join amflibW.ITMRVB irb on irb.ITNBR=ir.ITNBR and irb.STID=ir.STID and irb.ITRV=ir.ITRV
+join cmalibW.IMPICD01 cc on cc.ITCLS=ir.ITCLS
+WHERE trim(CDCVNB) in (",COList,")
+  and CDAITX not like 'PSA-%' and CDAITX <> 'FS TOOL'
+ORDER BY CDCVNB, CDAITX"}))
